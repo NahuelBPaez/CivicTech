@@ -11,7 +11,7 @@ El sistema opera bajo un modelo **B2G (Business to Government)**, conectando la 
 
 ---
 
-## ✨ Características Principales
+##  Características Principales
 
 ### Para el Ciudadano (App Móvil)
 * **Captura Estructurada:** Registro automático de la fecha, hora (servidor/dispositivo) y coordenadas exactas (GPS).
@@ -25,7 +25,7 @@ El sistema opera bajo un modelo **B2G (Business to Government)**, conectando la 
 
 ---
 
-## 🏗️ Arquitectura Técnica
+##  Arquitectura Técnica
 
 Para garantizar el cumplimiento de normativas legales y la solidez de las auditorías, ExomSystem utiliza una arquitectura de persistencia 100% relacional:
 
@@ -43,7 +43,7 @@ Para garantizar el cumplimiento de normativas legales y la solidez de las audito
 
 ---
 
-## 🗄️ Esquema de Datos Relacional (MER Básico)
+##  Esquema de Datos Relacional (MER Básico)
 
 El modelo de datos está diseñado para evitar datos huérfanos y asegurar la trazabilidad:
 
@@ -54,7 +54,7 @@ El modelo de datos está diseñado para evitar datos huérfanos y asegurar la tr
 
 ---
 
-## 🚀 Instalación y Ejecución Local
+##  Instalación y Ejecución Local
 
 ### Prerrequisitos
 * [Docker](https://www.docker.com/) y Docker Compose (Recomendado para levantar la base de datos fácilmente).
