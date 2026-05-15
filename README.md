@@ -1,4 +1,6 @@
-# Plataforma de Civic Tech Colaborativa
+# Plataforma de CivicTech
+Tecnología Cívica Colaborativa  
+Universidad Nacional de Chilecito (UNdeC) – Base de Datos II – Trabajo Integrador
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![PostGIS](https://img.shields.io/badge/PostGIS-155E95?style=for-the-badge&logo=postgresql&logoColor=white)
