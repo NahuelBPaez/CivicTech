@@ -1,5 +1,5 @@
-# Plataforma de CivicTech
-Tecnología Cívica Colaborativa  
+# CivicTech
+## Plataforma Tecnología Cívica Colaborativa  
 Universidad Nacional de Chilecito (UNdeC) – Base de Datos II – Trabajo Integrador
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
@@ -7,7 +7,12 @@ Universidad Nacional de Chilecito (UNdeC) – Base de Datos II – Trabajo Integ
 ![Cloud Storage](https://img.shields.io/badge/Cloud_Storage-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-En_Desarrollo-green)
 
-ExomSystem es una solución de **Tecnología Cívica (Civic Tech)** diseñada para mitigar el colapso de la movilidad urbana. La plataforma convierte el dispositivo móvil de cada ciudadano en una herramienta de orden público, permitiendo reportar infracciones de tránsito (como estacionamiento en doble fila o bloqueo de rampas) mediante la captura de **evidencia estructurada, geolocalizada y blindada criptográficamente**.
+## ¿Cuál es el problema?
+Las ciudades enfrentan un colapso en la movilidad urbana debido a infracciones de tránsito frecuentes y difíciles de controlar. El estacionamiento en doble fila, el bloqueo de rampas y sendas peatonales generan riesgos para peatones, afectan la accesibilidad de personas con movilidad reducida y aumentan la frustración ciudadana por la falta de control estatal efectivo. Los municipios carecen de herramientas ágiles y confiables para recibir, organizar y validar reportes ciudadanos de manera estructurada.
+
+## ¿Qué es CivicTech?
+CivicTech (tecnología cívica) es el uso de soluciones digitales para fortalecer la participación ciudadana, mejorar la transparencia y facilitar la colaboración entre sociedad y gobierno. Se trata de aplicaciones y plataformas que convierten a los ciudadanos en actores activos de la gestión pública, permitiéndoles reportar problemas, aportar datos y colaborar en la construcción de ciudades más ordenadas y accesibles.
+En este contexto, una app CivicTech transforma el teléfono móvil en una herramienta de control social: el ciudadano captura evidencia (fotografía, ubicación GPS, estampa de tiempo) y la plataforma la estructura con mecanismos de seguridad como hashing y metadatos, garantizando la integridad de la información.
 
 El sistema opera bajo un modelo **B2G (Business to Government)**, conectando la participación ciudadana directamente con los paneles de control de las autoridades de tránsito.
 
