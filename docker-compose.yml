@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+
+  # ─────────────────────────────────────────────
+  # Base de Datos: PostgreSQL + PostGIS
+  # ─────────────────────────────────────────────
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: civictech_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tu_contraseña_secreta
+      POSTGRES_DB: civictech_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Ejecuta el schema SQL automáticamente la primera vez que levanta
+      - ./dbscripts.sql:/docker-entrypoint-initdb.d/dbscripts.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d civictech_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─────────────────────────────────────────────
+  # Jupyter Lab — entorno interactivo de pruebas
+  # Acceso: http://localhost:8888  (token: civictech)
+  # ─────────────────────────────────────────────
+  jupyter:
+    build: .
+    container_name: civictech_jupyter
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=civictech_db
+      - DB_USER=postgres
+      - DB_PASSWORD=tu_contraseña_secreta
+    ports:
+      - "8888:8888"
+    volumes:
+      # Monta el proyecto en vivo: los cambios en tu código se reflejan sin rebuild
+      - .:/app
+
+volumes:
+  postgres_data:
