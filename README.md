@@ -14,8 +14,6 @@ Las ciudades enfrentan un colapso en la movilidad urbana debido a infracciones d
 CivicTech (tecnología cívica) es el uso de soluciones digitales para fortalecer la participación ciudadana, mejorar la transparencia y facilitar la colaboración entre sociedad y gobierno. Se trata de aplicaciones y plataformas que convierten a los ciudadanos en actores activos de la gestión pública, permitiéndoles reportar problemas, aportar datos y colaborar en la construcción de ciudades más ordenadas y accesibles.
 En este contexto, una app CivicTech transforma el teléfono móvil en una herramienta de control social: el ciudadano captura evidencia (fotografía, ubicación GPS, estampa de tiempo) y la plataforma la estructura con mecanismos de seguridad como hashing y metadatos, garantizando la integridad de la información.
 
-El sistema opera bajo un modelo **B2G (Business to Government)**, conectando la participación ciudadana directamente con los paneles de control de las autoridades de tránsito.
-
 ---
 
 ##  Características Principales
