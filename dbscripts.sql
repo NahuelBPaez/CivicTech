@@ -12,7 +12,7 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE TABLE Usuario (
     id_usuario SERIAL PRIMARY KEY,
     nombre_apellido VARCHAR(255) NOT NULL,
-    dni_cuil VARCHAR(20) UNIQUE NOT NULL,
+    dni VARCHAR(20) UNIQUE NOT NULL,
     reputacion INT DEFAULT 100,
     email VARCHAR(255) UNIQUE NOT NULL,
     contrasena VARCHAR(255) NOT NULL -- Se utiliza 'contrasena' sin 'ñ' para evitar conflictos de encoding
@@ -71,9 +71,9 @@ TRUNCATE TABLE Evidencia, Reporte, Usuario RESTART IDENTITY CASCADE;
 -- 1. Carga de Usuarios (Denunciantes locales)
 -- ---------------------------------------------------------------------
 INSERT INTO Usuario (nombre_apellido, dni_cuil, reputacion, email, contrasena) VALUES
-('Mariano Ormeño', '20-36123456-9', 100, 'mariano.ormeno@email.com', '$2a$12$K3vYV2vG8L8...hash_simulado'),
-('Lucía Fanchil', '27-40987654-2', 98, 'lucia.f@email.com', '$2a$12$J9xWw3vH9M9...hash_simulado'),
-('Carlos Castro', '20-28112233-3', 50, 'carlos.c@email.com', '$2a$12$L1zZz4vJ1N1...hash_simulado');
+('Mariano Ormeño', '36123456', 100, 'mariano.ormeno@email.com', '$2a$12$K3vYV2vG8L8...hash_simulado'),
+('Lucía Fanchil', '40987654', 98, 'lucia.f@email.com', '$2a$12$J9xWw3vH9M9...hash_simulado'),
+('Carlos Castro', '28112233', 50, 'carlos.c@email.com', '$2a$12$L1zZz4vJ1N1...hash_simulado');
 
 -- ---------------------------------------------------------------------
 -- 2. Carga de Reportes (Infracciones con GPS real en Chilecito)
