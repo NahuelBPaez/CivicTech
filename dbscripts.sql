@@ -136,3 +136,4 @@ INSERT INTO Evidencia (id_infraccion, url_foto, url_archivo_s3, hash_seguridad_s
     'https://s3.amazonaws.com/bucket-exomsystem/evidencias/2026/05/chilecito_003.jpg', 
     '112e22244d2b3e9f5226272d30f2a627b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e9'
 );
+ COMMIT;
