@@ -106,33 +106,113 @@ En la base de datos únicamente se almacena:
 
 ---
 
-### Pasos de Configuración
+# CivicTech
 
-1. **Clonar el repositorio:**
-   ```bash
-   git clone https://github.com/NahuelBPaez/CivicTech.git
-   cd CivicTech
-   ```
+Plataforma colaborativa para gestión de reportes viales urbanos.
 
-2. **Crear el entorno virtual:**
-   ```bash
-    python -m venv ./venv
-   ```
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![PostGIS](https://img.shields.io/badge/PostGIS-155E95?style=for-the-badge&logo=postgresql&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-    Para activarlo:
-      ```bash
-      source ./venv/bin/activate
-      ```
+---
 
-3. **Levantar PostgreSQL**
-     ```bash
-     docker run --name mi_postgres_postgis \
-     -e POSTGRES_USER=admin \
-     -e POSTGRES_PASSWORD=admin123 \
-     -e POSTGRES_DB=mi_base \
-     -p 5432:5432 \
-     -d postgis/postgis:15-3.3
-     ```
+## Requisitos previos
+
+- [Docker](https://www.docker.com/get-started) y Docker Compose instalados
+- [Git](https://git-scm.com/) instalado
+
+---
+
+## Instalación
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/NahuelBPaez/CivicTech.git
+cd CivicTech
+```
+
+### 2. Configurar las variables de entorno
+
+Copiá el archivo de ejemplo y completá tus credenciales:
+
+```bash
+cp prueba.env .env
+```
+
+Editá `.env` con tus valores:
+
+```env
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=civictech_db
+DB_USER=postgres
+DB_PASSWORD=tu_contraseña_secreta
+```
+
+
+### 3. Levantar los contenedores
+
+```bash
+docker-compose up --build
+```
+
+Esto levanta dos servicios:
+- **`db`** — PostgreSQL 16 con PostGIS. Ejecuta `dbscripts.sql` automáticamente y carga los datos de prueba.
+- **`jupyter`** — JupyterLab disponible en [http://localhost:8888](http://localhost:8888)
+
+> La primera vez puede tardar unos minutos mientras se descarga la imagen de PostGIS.
+
+### 4. Acceder a JupyterLab
+
+Abrí el navegador en:
+
+```
+http://localhost:8888
+```
+
+Los notebooks disponibles son:
+- `prueba_dao.ipynb` — pruebas CRUD con la capa DAO en Python
+- `consultas_sql.ipynb` — consultas SQL directas con jupysql
+
+---
+
+## Reiniciar la base de datos desde cero
+
+Si necesitás resetear completamente la base de datos (por ejemplo, tras modificar `dbscripts.sql`):
+
+```bash
+docker-compose down -v
+docker-compose up --build
+```
+
+> El flag `-v` elimina el volumen de datos. Sin él, Postgres no vuelve a ejecutar el script de inicialización.
+
+---
+
+## Estructura del proyecto
+
+```
+CivicTech/
+├── db_models/
+│   ├── __init__.py
+│   ├── usuario.py
+│   ├── reporte.py
+│   └── evidencia.py
+├── dao.py
+├── config_vars.py
+├── dbscripts.sql
+├── docker-compose.yml
+├── Dockerfile
+├── libs.txt
+├── prueba_dao.ipynb
+├── consultas_sql.ipynb
+├── prueba.env
+└── .gitignore
+```
+
+---
 
 # Modelo Relacional
 
