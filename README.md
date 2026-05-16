@@ -125,14 +125,14 @@ En la base de datos únicamente se almacena:
       ```
 
 3. **Levantar PostgreSQL**
-  ```bash
-  docker run --name mi_postgres_postgis \
-  -e POSTGRES_USER=admin \
-  -e POSTGRES_PASSWORD=admin123 \
-  -e POSTGRES_DB=mi_base \
-  -p 5432:5432 \
-  -d postgis/postgis:15-3.3
-  ```
+     ```bash
+     docker run --name mi_postgres_postgis \
+     -e POSTGRES_USER=admin \
+     -e POSTGRES_PASSWORD=admin123 \
+     -e POSTGRES_DB=mi_base \
+     -p 5432:5432 \
+     -d postgis/postgis:15-3.3
+     ```
 
 # Modelo Relacional
 
