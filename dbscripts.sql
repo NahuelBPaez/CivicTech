@@ -69,8 +69,9 @@ TRUNCATE TABLE Evidencia, Reporte, Usuario RESTART IDENTITY CASCADE;
 
 -- ---------------------------------------------------------------------
 -- 1. Carga de Usuarios (Denunciantes locales)
+-- BUGFIX: columna era 'dni_cuil' en el INSERT, pero la tabla define 'dni'
 -- ---------------------------------------------------------------------
-INSERT INTO Usuario (nombre_apellido, dni_cuil, reputacion, email, contrasena) VALUES
+INSERT INTO Usuario (nombre_apellido, dni, reputacion, email, contrasena) VALUES
 ('Mariano Ormeño', '36123456', 100, 'mariano.ormeno@email.com', '$2a$12$K3vYV2vG8L8...hash_simulado'),
 ('Lucía Fanchil', '40987654', 98, 'lucia.f@email.com', '$2a$12$J9xWw3vH9M9...hash_simulado'),
 ('Carlos Castro', '28112233', 50, 'carlos.c@email.com', '$2a$12$L1zZz4vJ1N1...hash_simulado');
@@ -136,4 +137,5 @@ INSERT INTO Evidencia (id_infraccion, url_foto, url_archivo_s3, hash_seguridad_s
     'https://s3.amazonaws.com/bucket-exomsystem/evidencias/2026/05/chilecito_003.jpg', 
     '112e22244d2b3e9f5226272d30f2a627b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e9'
 );
- COMMIT;
+
+COMMIT;

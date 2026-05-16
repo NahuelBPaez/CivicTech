@@ -217,14 +217,15 @@ class ReporteDAO:
 
     @staticmethod
     def _fila_a_reporte(fila: dict) -> Reporte:
+        # BUGFIX: eliminado id_tipo (no existe en Reporte),
+        #         corregidos nombres: ubicacion, estado, fecha_hora_server
         return Reporte(
             id_usuario=fila["id_usuario"],
-            id_tipo=1,
             patente_vehiculo=fila["patente_vehiculo"],
             fecha_hora_dispositivo=fila["fechahora_dispositivo"],
-            fecha_hora_servidor=fila["fechahora_server"],
-            coordenadas_gps=(fila["longitud"], fila["latitud"]),
-            estado_resolucion=fila["estado"],
+            fecha_hora_server=fila["fechahora_server"],
+            ubicacion=(fila["longitud"], fila["latitud"]),
+            estado=fila["estado"],
             id_reporte=fila["id_reporte"],
         )
 
@@ -232,7 +233,8 @@ class ReporteDAO:
 
     def crear(self, reporte: Reporte) -> Reporte:
         """Inserta un nuevo reporte y devuelve el objeto con su id asignado."""
-        lon, lat = reporte.coordenadas_gps
+        # BUGFIX: reporte.ubicacion (no coordenadas_gps), reporte.estado (no estado_resolucion)
+        lon, lat = reporte.ubicacion
         sql = """
             INSERT INTO "reporte"
                 (id_usuario, patente_vehiculo, "fechahora_dispositivo",
@@ -249,13 +251,13 @@ class ReporteDAO:
                 reporte.patente_vehiculo,
                 reporte.fecha_hora_dispositivo,
                 lon, lat,
-                reporte.estado_resolucion,
-                None,
-                None
+                reporte.estado,
+                reporte.hash_evidencia,
+                reporte.descripcion,
             ))
             res = cur.fetchone()
             reporte.id_reporte = res[0]
-            reporte.fecha_hora_servidor = res[1]
+            reporte.fecha_hora_server = res[1]
         self.conn.commit()
         return reporte
 
@@ -408,10 +410,11 @@ class EvidenciaDAO:
 
     @staticmethod
     def _fila_a_evidencia(fila: dict) -> Evidencia:
+        # BUGFIX: id_infraccion (no id_reporte), hash_seguridad_sha (no hash_seguridad_sha256)
         return Evidencia(
-            id_reporte=fila["id_infraccion"],
+            id_infraccion=fila["id_infraccion"],
             url_archivo_s3=fila["url_archivo_s3"],
-            hash_seguridad_sha256=fila["hash_seguridad_sha"],
+            hash_seguridad_sha=fila["hash_seguridad_sha"],
             id_evidencia=fila["id_evidencia"],
         )
 
@@ -425,11 +428,12 @@ class EvidenciaDAO:
             RETURNING id_evidencia;
         """
         with self.conn.cursor() as cur:
+            # BUGFIX: evidencia.id_infraccion (no id_reporte), evidencia.hash_seguridad_sha (no sha256)
             cur.execute(sql, (
-                evidencia.id_reporte,
-                None,
+                evidencia.id_infraccion,
+                evidencia.url_foto,
                 evidencia.url_archivo_s3,
-                evidencia.hash_seguridad_sha256,
+                evidencia.hash_seguridad_sha,
             ))
             evidencia.id_evidencia = cur.fetchone()[0]
         self.conn.commit()
@@ -440,7 +444,7 @@ class EvidenciaDAO:
     def obtener_por_id(self, id_evidencia: int) -> Evidencia | None:
         """Devuelve una Evidencia por su PK, o None si no existe."""
         sql = """
-            SELECT id_evidencia, id_infraccion, url_archivo_s3, hash_seguridad_sha
+            SELECT id_evidencia, id_infraccion, url_foto, url_archivo_s3, hash_seguridad_sha
             FROM "evidencia"
             WHERE id_evidencia = %s;
         """
@@ -452,7 +456,7 @@ class EvidenciaDAO:
     def obtener_por_reporte(self, id_reporte: int) -> list[Evidencia]:
         """Devuelve todas las evidencias asociadas a un reporte."""
         sql = """
-            SELECT id_evidencia, id_infraccion, url_archivo_s3, hash_seguridad_sha
+            SELECT id_evidencia, id_infraccion, url_foto, url_archivo_s3, hash_seguridad_sha
             FROM "evidencia"
             WHERE id_infraccion = %s
             ORDER BY id_evidencia;
@@ -465,7 +469,7 @@ class EvidenciaDAO:
     def obtener_por_hash(self, hash_sha256: str) -> Evidencia | None:
         """Busca una evidencia por su checksum hash."""
         sql = """
-            SELECT id_evidencia, id_infraccion, url_archivo_s3, hash_seguridad_sha
+            SELECT id_evidencia, id_infraccion, url_foto, url_archivo_s3, hash_seguridad_sha
             FROM "evidencia"
             WHERE hash_seguridad_sha = %s;
         """
@@ -477,7 +481,7 @@ class EvidenciaDAO:
     def obtener_todas(self) -> list[Evidencia]:
         """Devuelve todas las evidencias registradas."""
         sql = """
-            SELECT id_evidencia, id_infraccion, url_archivo_s3, hash_seguridad_sha
+            SELECT id_evidencia, id_infraccion, url_foto, url_archivo_s3, hash_seguridad_sha
             FROM "evidencia"
             ORDER BY id_evidencia;
         """
