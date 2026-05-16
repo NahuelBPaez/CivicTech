@@ -106,6 +106,34 @@ En la base de datos únicamente se almacena:
 
 ---
 
+### Pasos de Configuración
+
+1. **Clonar el repositorio:**
+   ```bash
+   git clone https://github.com/NahuelBPaez/CivicTech.git
+   cd CivicTech
+   ```
+
+2. **Crear el entorno virtual:**
+   ```bash
+    python -m venv ./venv
+   ```
+
+    Para activarlo:
+      ```bash
+      source ./venv/bin/activate
+      ```
+
+3. **Levantar PostgreSQL**
+  ```bash
+  docker run --name mi_postgres_postgis \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=admin123 \
+  -e POSTGRES_DB=mi_base \
+  -p 5432:5432 \
+  -d postgis/postgis:15-3.3
+  ```
+
 # Modelo Relacional
 
 El sistema se compone de tres entidades principales:
