@@ -7,8 +7,8 @@
 
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![PostGIS](https://img.shields.io/badge/PostGIS-155E95?style=for-the-badge&logo=postgresql&logoColor=white)
-![Cloud Storage](https://img.shields.io/badge/Cloud_Storage-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white)
-![Status](https://img.shields.io/badge/Status-En_Desarrollo-green)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 ---
 
@@ -106,16 +106,6 @@ En la base de datos únicamente se almacena:
 
 ---
 
-# CivicTech
-
-Plataforma colaborativa para gestión de reportes viales urbanos.
-
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![PostGIS](https://img.shields.io/badge/PostGIS-155E95?style=for-the-badge&logo=postgresql&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-
----
 
 ## Requisitos previos
 
