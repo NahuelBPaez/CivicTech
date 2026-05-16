@@ -209,7 +209,7 @@ Un reporte puede contener múltiples evidencias fotográficas.
 CREATE TABLE Usuario (
     id_usuario SERIAL PRIMARY KEY,
     nombre_apellido VARCHAR(255) NOT NULL,
-    dni_cuil VARCHAR(20) UNIQUE NOT NULL,
+    dni VARCHAR(20) UNIQUE NOT NULL,
     reputacion INT DEFAULT 100,
     email VARCHAR(255) UNIQUE NOT NULL,
     contrasena VARCHAR(255) NOT NULL
@@ -222,7 +222,7 @@ CREATE TABLE Usuario (
 | --------------- | --------------------------- |
 | id_usuario      | Identificador único         |
 | nombre_apellido | Nombre completo del usuario |
-| dni_cuil        | Documento único             |
+| dni             | Documento único             |
 | reputacion      | Puntaje de reputación       |
 | email           | Correo electrónico          |
 | contrasena      | Contraseña cifrada          |
