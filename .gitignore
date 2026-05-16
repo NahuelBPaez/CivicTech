@@ -1,0 +1,23 @@
+# Entornos virtuales (Si usas venv o virtualenv)
+.venv/
+venv/
+env/
+ENV/
+
+# Archivos temporales de Python (Compilados)
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Variables de entorno / Credenciales (¡CRÍTICO!)
+.env
+.env.local
+
+# Carpetas ocultas de editores
+.vscode/
+.idea/
+
+# Archivos del sistema operativo
+Thumbs.db
+.DS_Store
