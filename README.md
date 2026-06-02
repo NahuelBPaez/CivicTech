@@ -5,11 +5,11 @@
 **Universidad Nacional de Chilecito (UNdeC)**
 **Materia:** Base de Datos II – Trabajo Integrador
 
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![PostGIS](https://img.shields.io/badge/PostGIS-155E95?style=for-the-badge&logo=postgresql&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![GeoJSON](https://img.shields.io/badge/GeoJSON-EAA221?style=for-the-badge&logo=geojson&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-
+![Jupyter](https://img.shields.io/badge/Jupyter-F37626?style=for-the-badge&logo=jupyter&logoColor=white)
 ---
 
 # Introducción
@@ -59,39 +59,50 @@ Diseñar un sistema de base de datos orientado a la gestión de reportes viales 
 
 # Arquitectura de Persistencia
 
-## PostgreSQL
+## MongoDB
 
-El sistema utiliza PostgreSQL como motor principal debido a:
+El sistema utiliza MongoDB como motor principal debido a:
 
-* Soporte de propiedades ACID.
-* Integridad referencial mediante claves foráneas.
-* Alta confiabilidad transaccional.
-* Escalabilidad y seguridad.
+* **Flexibilidad de documentos:** Los datos se almacenan en formato BSON/JSON, lo que permite representar entidades como Usuario, Reporte, Evidencia y Municipio de manera natural, sin necesidad de un esquema rígido. Esto facilita la evolución del modelo cuando se agregan nuevas colecciones o campos.
+
+* **Escalabilidad horizontal:** MongoDB soporta sharding y replicación nativa, lo que permite distribuir los reportes y evidencias entre múltiples nodos. Esto es clave para un sistema de tecnología cívica que puede crecer a nivel regional o nacional.
+
+* **Índices geoespaciales:** A través de índices 2dsphere, MongoDB permite realizar consultas eficientes sobre coordenadas GPS, como detectar vehículos en rampas o generar mapas de calor de infracciones.
+
+* **Alta disponibilidad:** La replicación automática asegura tolerancia a fallos y continuidad del servicio, garantizando que los reportes ciudadanos estén siempre accesibles.
+
+* **Seguridad y control de acceso  :** MongoDB ofrece autenticación, cifrado en tránsito y en reposo, y control de roles, lo que protege la evidencia digital y los datos personales de los usuarios.
+
+* **Integridad lógica en la aplicación:** Aunque MongoDB no implementa claves foráneas como un motor relacional, la integridad se asegura mediante referencias (ObjectId) y validaciones en la capa DAO. Esto permite mantener consistencia entre Usuario, Reporte y Evidencia, además de registrar las acciones de los agentes municipales sobre la reputación.
+
 
 ---
 
-## PostGIS
-
-La extensión PostGIS permite trabajar con datos geográficos de forma nativa.
+## Geoespacial en MongoDB
+MongoDB permite trabajar con datos geográficos de forma nativa mediante el estándar GeoJSON y los índices 2dsphere.
 
 Se utiliza el tipo:
+```Json
+{ "type": "Point", "coordinates": [longitud, latitud] }
 
-```sql
-GEOMETRY(Point, 4326)
 ```
-
 Esto permite:
 
-* Almacenar coordenadas GPS.
-* Realizar consultas espaciales.
-* Generar mapas de calor.
-* Validar jurisdicciones municipales.
+* Almacenar coordenadas GPS directamente en los documentos.
+* Realizar consultas espaciales con operadores como $near, $geoWithin y $geoIntersects.
+* Generar mapas de calor y estadísticas de densidad de infracciones.
+* Validar jurisdicciones municipales mediante polígonos GeoJSON asociados a cada municipio.
 
+Ejemplo de índice geoespacial:
+```Json
+db.reporte.createIndex({ ubicacion: "2dsphere" })
+
+```
 ---
 
 ## Object Storage
 
-Las imágenes no se almacenan directamente dentro de PostgreSQL.
+Las imágenes no se almacenan directamente dentro de MongoDB.
 
 Se utiliza almacenamiento externo tipo:
 
@@ -204,13 +215,15 @@ CivicTech/
 
 ---
 
-# Modelo Relacional
+# Modelo de Datos en MongoDB
 
-El sistema se compone de tres entidades principales:
+El sistema se compone de cinco colecciones principales:
 
 * Usuario
 * Reporte
 * Evidencia
+* Municipio
+* AgenteMunicipal
 
 ---
 
@@ -218,103 +231,184 @@ El sistema se compone de tres entidades principales:
 
 ## Usuario (1:N) Reporte
 
-Un usuario puede generar múltiples reportes.
+Un usuario puede generar múltiples reportes.  
+Se mantiene mediante la referencia usuario_id en la colección Reporte.
 
 ---
 
 ## Reporte (1:N) Evidencia
 
-Un reporte puede contener múltiples evidencias fotográficas.
+Un reporte puede contener múltiples evidencias fotográficas.  
+Se mantiene mediante la referencia reporte_id en la colección Evidencia.
+
+## Municipio (1:N) Reporte  
+Cada reporte pertenece a un municipio específico.  
+Se mantiene mediante la referencia municipio_id en la colección Reporte.
+
+## Municipio (1:N) AgenteMunicipal  
+Cada agente municipal está asociado a un municipio.  
+Se mantiene mediante la referencia municipio_id en la colección AgenteMunicipal.
+
+## AgenteMunicipal (N:M) Usuario  
+Los agentes municipales pueden validar reportes y ajustar la reputación de distintos usuarios.  
+Se registra en el arreglo acciones dentro de la colección AgenteMunicipal, que guarda usuario_id, reporte_id y el reputacion_delta.
 
 ---
 
 # Diccionario de Datos
 
-## Tabla: Usuario
+## Colección: Usuario
 
-```sql
-CREATE TABLE Usuario (
-    id_usuario SERIAL PRIMARY KEY,
-    nombre_apellido VARCHAR(255) NOT NULL,
-    dni VARCHAR(20) UNIQUE NOT NULL,
-    reputacion INT DEFAULT 100,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    contrasena VARCHAR(255) NOT NULL
-);
+```Json
+{
+  "_id": ObjectId,
+  "nombre_apellido": "Juan Pérez",
+  "dni": "12345678",
+  "reputacion": 95,
+  "email": "juan@example.com",
+  "contrasena": "hash_bcrypt"
+}
 ```
 
 ### Descripción
 
-| Campo           | Descripción                 |
-| --------------- | --------------------------- |
-| id_usuario      | Identificador único         |
-| nombre_apellido | Nombre completo del usuario |
-| dni             | Documento único             |
-| reputacion      | Puntaje de reputación       |
-| email           | Correo electrónico          |
-| contrasena      | Contraseña cifrada          |
+| Campo           | Descripción                      |
+| --------------- | --------------------------------------------------------|
+|``_id``             | Identificador único del documento                       |
+|``nombre_apellido`` | Nombre completo del usuario                             |
+|``dni``             | Documento único                                         |
+|``reputacion``      | Puntaje de reputación, ajustado por agentes municipales.|
+|``email``           | Correo electrónico                                      |
+|``contrasena``      | Contraseña cifrada(hash)                                |
 
 ---
 
-## Tabla: Reporte
 
-```sql
-CREATE TABLE Reporte (
-    id_reporte SERIAL PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    patente_vehiculo VARCHAR(15) NOT NULL,
-    fechaHora_dispositivo TIMESTAMP NOT NULL,
-    fechaHora_server TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ubicacion GEOMETRY(Point, 4326) NOT NULL,
-    estado VARCHAR(20) DEFAULT 'Pendiente',
-    hash_evidencia VARCHAR(64),
-    descripcion TEXT,
+## Colección: Reporte
 
-    FOREIGN KEY (id_usuario)
-    REFERENCES Usuario(id_usuario)
-);
+```Json
+{
+  "_id": ObjectId,
+  "usuario_id": ObjectId,
+  "municipio_id": ObjectId,
+  "patente_vehiculo": "ABC123",
+  "fechaHora_dispositivo": ISODate("2026-06-02T15:00:00Z"),
+  "fechaHora_server": ISODate(),
+  "ubicacion": { "type": "Point", "coordinates": [-66.85, -29.42] },
+  "estado": "Pendiente",
+  "hash_evidencia": "sha256...",
+  "descripcion": "Vehículo bloqueando rampa",
+  "validador_id": ObjectId
+}
 ```
-
 ### Descripción
 
-| Campo                 | Descripción                    |
-| --------------------- | ------------------------------ |
-| id_reporte            | Identificador del reporte      |
-| id_usuario            | Usuario que realizó el reporte |
-| patente_vehiculo      | Patente del vehículo           |
-| fechaHora_dispositivo | Fecha y hora del dispositivo   |
-| fechaHora_server      | Fecha y hora del servidor      |
-| ubicacion             | Coordenadas GPS                |
-| estado                | Estado del reporte             |
-| hash_evidencia        | Hash SHA-256                   |
-| descripcion           | Información adicional          |
+| Campo | Descripción |
+| ---- | --- |
+| ``_id`` | Identificador único del reporte. |
+| ``usuario_id`` | Referencia al usuario que generó el reporte. |
+| ``municipio_id`` | Referencia al municipio donde ocurrió la infracción. |
+| ``patente_vehiculo`` | Patente del vehículo reportado. |
+| ``fechaHora_dispositivo`` | Fecha y hora registrada por el dispositivo. |
+| ``fechaHora_server`` | Fecha y hora registrada por el servidor. |
+| ``ubicacion`` | Coordenadas GPS en formato GeoJSON (``Point``). |
+| ``estado`` | Estado del reporte: Pendiente, Validada, Rechazada. |
+| ``hash_evidencia`` | Hash SHA-256 de la evidencia asociada. |
+| ``descripcion`` | Información adicional del reporte. |
+| ``validador_id`` | Referencia al agente municipal que validó. |
 
 ---
 
-## Tabla: Evidencia
+## Colección: Evidencia
 
-```sql
-CREATE TABLE Evidencia (
-    id_evidencia SERIAL PRIMARY KEY,
-    id_infraccion INT NOT NULL,
-    url_foto TEXT,
-    url_archivo_s3 TEXT,
-    hash_seguridad_sha VARCHAR(64),
+```Json
+{
+  "_id": ObjectId,
+  "reporte_id": ObjectId,
+  "url_foto": "http://...",
+  "url_archivo_s3": "s3://bucket/file.jpg",
+  "hash_seguridad_sha": "sha256..."
+}
 
-    FOREIGN KEY (id_infraccion)
-    REFERENCES Reporte(id_reporte)
-);
 ```
 
 ### Descripción
 
-| Campo              | Descripción                  |
-| ------------------ | ---------------------------- |
-| id_evidencia       | Identificador de evidencia   |
-| id_infraccion      | Referencia al reporte        |
-| url_foto           | URL de imagen                |
-| url_archivo_s3     | URL del almacenamiento cloud |
-| hash_seguridad_sha | Hash de integridad           |
+| Campo | Descripción |
+| --- | --- |
+| ``_id`` | Identificador único de la evidencia. |
+| ``reporte_id`` | Referencia al reporte asociado. |
+| ``url_foto`` | URL de la imagen. |
+| ``url_archivo_s3`` | URL del archivo en almacenamiento externo. |
+| ``hash_seguridad_sha`` | Hash de integridad de la evidencia. |
+
+---
+
+### Colección: Municipio
+```Json
+{
+  "_id": ObjectId,
+  "nombre": "Chilecito",
+  "provincia": "La Rioja",
+  "pais": "Argentina",
+  "codigo_municipio": "CHL001",
+  "contacto": {
+    "email": "transito@chilecito.gob.ar",
+    "telefono": "+54 3825 123456"
+  }
+}
+
+```
+### Descripción
+
+| Campo | Descripción |
+| --- | --- |
+| ``_id`` | Identificador único del municipio. |
+| ``nombre`` | Nombre de la ciudad o municipio. |
+| ``provincia`` | Provincia a la que pertenece. |
+| ``pais`` | País. |
+| ``codigo_municipio`` | Código único de municipio. |
+| ``contacto.email`` | Correo de contacto oficial. |
+| ``contacto.telefono`` | Teléfono de contacto oficial. |
+
+---
+
+### Colección: AgenteMunicipal
+
+```Json
+{
+  "_id": ObjectId,
+  "nombre_apellido": "María Gómez",
+  "dni": "30111222",
+  "email": "mgomez@chilecito.gob.ar",
+  "rol": "Inspector",
+  "municipio_id": ObjectId,
+  "acciones": [
+    {
+      "reporte_id": ObjectId,
+      "usuario_id": ObjectId,
+      "fecha_accion": ISODate("2026-06-02T15:00:00Z"),
+      "tipo_accion": "AjusteReputacion",
+      "reputacion_delta": -10
+    }
+  ]
+}
+
+```
+
+| Campo | Descripción |
+| --- | --- |
+| ``_id`` | Identificador único del agente municipal. |
+| ``nombre_apellido`` | Nombre completo del agente. |
+| ``dni`` | Documento único del agente. |
+| ``email`` | Correo institucional. |
+| ``rol`` | Rol dentro del municipio (ej. Inspector). |
+| ``municipio_id`` | Referencia al municipio al que pertenece. |
+| ``acciones.reporte_id`` | Reporte sobre el que actuó. |
+| ``acciones.usuario_id`` | Usuario cuya reputación fue ajustada. |
+| ``acciones.fecha_accion`` | Fecha de la acción realizada. |
+| ``acciones.tipo_accion`` | Tipo de acción: Validación, Rechazo, AjusteReputacion. |
+| ``acciones.reputacion_delta`` | Variación aplicada a la reputación del usuario. |
 
 ---
 
