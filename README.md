@@ -274,11 +274,11 @@ Se registra en el arreglo acciones dentro de la colección AgenteMunicipal, que 
 
 | Campo           | Descripción                      |
 | --------------- | --------------------------------------------------------|
-|``_id``             | Identificador único del documento                       |
+|``_id``             | Identificador único del documento,indice unico                       |
 |``nombre_apellido`` | Nombre completo del usuario                             |
 |``dni``             | Documento único                                         |
 |``reputacion``      | Puntaje de reputación, ajustado por agentes municipales.|
-|``email``           | Correo electrónico                                      |
+|``email``           | Correo electrónico, indice unico.                                      |
 |``contrasena``      | Contraseña cifrada(hash)                                |
 
 ---
@@ -414,58 +414,79 @@ Se registra en el arreglo acciones dentro de la colección AgenteMunicipal, que 
 
 # Restricciones Implementadas
 
-## Restricción CHECK
+## Restricciones de Estado
+Garantiza que el estado del reporte solo pueda contener valores válidos.  
+La validación se implementa de la siguiente manera:   
 
-```sql
-CONSTRAINT chk_estado_reporte
-CHECK (estado IN ('Pendiente', 'Validada', 'Rechazada'))
+* **Documentación en el Diccionario de Datos**  
+En la colección **Reporte**, el campo estado se define con valores permitidos:
+
+  * Pendiente
+  * Validada
+  * Rechazada
+
+* **Validación en la base de datos**  
+Se puede usar un validador de esquema para garantizar que solo se inserten valores válidos:
+
+```Json
+db.createCollection("reporte", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["estado"],
+      properties: {
+        estado: {
+          enum: ["Pendiente", "Validada", "Rechazada"]
+        }
+      }
+    }
+  }
+})
+
 ```
 
-Garantiza que el estado del reporte solo pueda contener valores válidos.
 
 ---
 
-## Restricciones UNIQUE
+## Restricciones Únicas  
+En MongoDB se implementan mediante índices únicos para evitar duplicación de usuarios:
 
-Aplicadas sobre:
-
-* `dni_cuil`
-* `email`
-
-Evitan duplicación de usuarios.
+```Json
+db.usuario.createIndex({ dni: 1 }, { unique: true })
+db.usuario.createIndex({ email: 1 }, { unique: true })
+```
 
 ---
 
-## Claves Foráneas
+## Referencias (Claves Foráneas)
 
-Permiten mantener integridad referencial entre:
+La integridad se asegura mediante referencias ObjectId y validaciones en la aplicación:
 
-* Usuario → Reporte
-* Reporte → Evidencia
+* Usuario → Reporte: usuario_id en la colección Reporte.
+* Reporte → Evidencia: reporte_id en la colección Evidencia.
+* Municipio → Reporte / AgenteMunicipal: municipio_id en las colecciones correspondientes.
 
 ---
 
 # Índices
 
-## Índice Espacial GIST
-
-```sql
-CREATE INDEX idx_reporte_ubicacion
-ON Reporte USING GIST (ubicacion);
+## Índices Geoespaciales
+En MongoDB se implementa 2dsphere:
+```Json
+db.reporte.createIndex({ ubicacion: "2dsphere" })
 ```
+Permite consultas con $near, $geoWithin y $geoIntersects sobre coordenadas GPS en formato GeoJSON.
 
-Optimiza consultas geográficas realizadas con PostGIS.
 
 ---
 
 ## Índice por Patente
 
-```sql
-CREATE INDEX idx_reporte_patente
-ON Reporte (patente_vehiculo);
-```
+Optimiza búsquedas de vehículos reportados:
+```Json
+db.reporte.createIndex({ patente_vehiculo: 1 })
 
-Optimiza búsquedas de vehículos.
+```
 
 ---
 
