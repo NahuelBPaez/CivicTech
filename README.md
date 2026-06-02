@@ -2,7 +2,7 @@
 
 ## Plataforma de Tecnología Cívica Colaborativa para Gestión de Reportes Viales
 
-**Universidad Nacional de Chilecito (UNdeC)**
+**Universidad Nacional de Chilecito (UNdeC)**  
 **Materia:** Base de Datos II – Trabajo Integrador
 
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
@@ -14,16 +14,21 @@
 
 # Introducción
 
-CivicTech es una propuesta de plataforma colaborativa orientada al ordenamiento vial urbano mediante el uso de tecnologías de bases de datos, geolocalización y almacenamiento seguro de evidencia digital.
+CivicTech es una propuesta de plataforma colaborativa orientada al ordenamiento vial urbano mediante el uso de tecnologías de bases de datos NoSQL, geolocalización y almacenamiento seguro de evidencia digital.
 
 El objetivo principal del sistema es permitir que los ciudadanos registren reportes de infracciones viales desde una aplicación móvil, mientras que las autoridades municipales pueden validar la información desde un panel administrativo.
 
-El proyecto se centra especialmente en el diseño de una arquitectura de persistencia robusta utilizando PostgreSQL y PostGIS, priorizando:
+El proyecto se centra especialmente en el diseño de una arquitectura de persistencia robusta utilizando MongoDB, priorizando:
 
-* Integridad referencial.
-* Trazabilidad de la evidencia.
-* Consistencia transaccional.
-* Procesamiento geoespacial.
+* Flexibilidad documental para representar entidades sin necesidad de esquemas rígidos.
+
+* Escalabilidad horizontal mediante replicación y sharding, asegurando crecimiento regional o nacional.
+
+* Procesamiento geoespacial con índices 2dsphere y datos en formato GeoJSON para validar jurisdicciones municipales y generar mapas de calor.
+
+* Trazabilidad de la evidencia mediante almacenamiento seguro en la nube y hash criptográfico.
+
+* Seguridad y control de acceso con autenticación, cifrado y roles para proteger datos ciudadanos.
 
 ---
 
@@ -52,7 +57,7 @@ Diseñar un sistema de base de datos orientado a la gestión de reportes viales 
 * Registrar evidencia digital.
 * Asociar coordenadas GPS.
 * Garantizar integridad mediante hashing.
-* Mantener relaciones consistentes entre entidades.
+* Mantener relaciones logicas
 * Optimizar consultas espaciales.
 
 ---
@@ -234,7 +239,6 @@ El sistema se compone de cinco colecciones principales:
 Un usuario puede generar múltiples reportes.  
 Se mantiene mediante la referencia usuario_id en la colección Reporte.
 
----
 
 ## Reporte (1:N) Evidencia
 
