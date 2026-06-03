@@ -216,12 +216,17 @@ dnspython>=2.0
 * Iniciá el contenedor.
 
 **Opción B — Línea de comandos (rápido):**
-```Bash
-# sin autenticación (útil para desarrollo local)
-docker run -d --name mongo_civictech -p 27017:27017 -v $(pwd)/data/db:/data/db mongo:6
 
-# con usuario root (si querés autenticación)
-docker run -d --name mongo_civictech -p 27017:27017 -v $(pwd)/data/db:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:6
+**Sin autenticación (útil para desarrollo local)**
+```Bash
+docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" mongo:6
+
+```
+
+**Con usuario root (si querés autenticación)**
+```Bash
+docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:6
+
 ```  
 3. Verificá en Docker Desktop que el contenedor esté Running y sin errores en los logs.
 
