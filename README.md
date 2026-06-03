@@ -192,7 +192,7 @@ mongodb://admin:adminpass@localhost:27017/?authSource=admin
 ---
 ### 4. Ejecutar el script (Playground de Compass) — método recomendado
 
-1. En el repo tenés script_mongo_autocontenido.js (o scrip_mongo.js). Abrilo y copiá todo su contenido.
+1. En el repo tenés ``script_mongo.js``. Abrilo y copiá todo su contenido.
 
 2. En Compass → seleccioná la base civictech → **Playground** → pegá el script completo.
 
@@ -205,10 +205,10 @@ mongodb://admin:adminpass@localhost:27017/?authSource=admin
 ### Alternativa (mongosh):  
 ```Bash
 # si usás autenticación
-mongosh --username admin --password 'adminpass' --authenticationDatabase admin --file script_mongo_autocontenido.js
+mongosh --username admin --password 'adminpass' --authenticationDatabase admin --file script_mongo.js
 
 # si no usás autenticación
-mongosh --file script_mongo_autocontenido.js
+mongosh --file script_mongo.js
 
 ```
 
