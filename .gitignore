@@ -1,23 +1,27 @@
-# Entornos virtuales (Si usas venv o virtualenv)
+# Entornos virtuales
 .venv/
 venv/
-env/
-ENV/
-
-# Archivos temporales de Python (Compilados)
-**/__pycache__/
+__pycache__/
 *.pyc
-*.pyo
-*.pyd
 
-# Variables de entorno / Credenciales (¡CRÍTICO!)
+# Entornos y datos locales
 .env
-.env.local
+prueba.env
+*.sqlite3
+data/
+data/db/
 
-# Carpetas ocultas de editores
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+docker-compose.override.yml
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
 .vscode/
 .idea/
-
-# Archivos del sistema operativo
-Thumbs.db
-.DS_Store
