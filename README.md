@@ -158,14 +158,39 @@ MONGO_PORT=27017
 MONGO_DB_NAME=civictech
 MONGO_USER=admin
 MONGO_PASSWORD=adminpass
-```
-```bash
-# Puerto de Jupyter (si corres Jupyter en contenedor)
 JUPYTER_PORT=8888
 ```
+**Nota:** estas variables son usadas por los notebooks y la futura DAO para construir la URI de conexión. No subas .env al repo; añadilo a .gitignore.
 
-### Para qué sirven estas variables  
-Estas variables son leídas por los notebooks y la capa DAO (Python) para construir la URI de conexión a MongoDB y evitar hardcodear credenciales en el código.
+### Entorno y dependencias  
+Crear y activar entorno virtual
+```bash
+# macOS / Linux
+python -m venv .venv
+source .venv/bin/activate
+```
+```bash
+# Windows PowerShell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+
+### Instalar dependencias
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+# o si no hay requirements.txt
+pip install pymongo python-dotenv jupyterlab pandas dnspython
+```
+
+requirements.txt sugerido
+```bash
+pymongo>=4.0
+python-dotenv>=1.0
+jupyterlab>=4.0
+pandas>=2.0
+dnspython>=2.0
+```
 
 ---
 
