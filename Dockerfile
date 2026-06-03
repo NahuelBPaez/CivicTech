@@ -1,24 +1,20 @@
-# Usamos una imagen oficial de Python para 2026
+# Dockerfile.jupyter
 FROM python:3.12-slim
 
-# Instalar dependencias del sistema necesarias para psycopg2
-RUN apt-get update && apt-get install -y \
-    gcc \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Definir el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar el archivo de librerías e instalarlas
-COPY libs.txt .
-RUN pip install --no-cache-dir -r libs.txt
+# Copiar dependencias e instalar
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar todo el código del proyecto (db_models/, dao.py, config_vars.py, etc.)
+# Copiar el resto del proyecto
 COPY . .
 
-# Exponer el puerto de Jupyter
+# Exponer puerto de Jupyter
 EXPOSE 8888
 
-# Iniciar Jupyter Lab al levantar el contenedor
-CMD ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=civictech"]
+# Token configurable por variable de entorno (por defecto "civictech" para desarrollo)
+ENV JUPYTER_TOKEN=${JUPYTER_TOKEN:-civictech}
+
+# Iniciar Jupyter Lab
+CMD ["sh", "-c", "jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token=$JUPYTER_TOKEN"]
