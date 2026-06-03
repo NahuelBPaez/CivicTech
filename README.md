@@ -270,21 +270,26 @@ Se registra en el arreglo acciones dentro de la colección AgenteMunicipal, que 
   "dni": "12345678",
   "reputacion": 95,
   "email": "juan@example.com",
-  "contrasena": "hash_bcrypt"
+  "contrasena": "hash_bcrypt",
+  "municipio_id": ObjectId("ID_CHILECITO")
 }
 ```
+
 
 ### Descripción
 
 | Campo           | Descripción                      |
 | --------------- | --------------------------------------------------------|
-|``_id``             | Identificador único del documento,indice unico                       |
+|``_id``             | Identificador único del documento,indice unico          |
 |``nombre_apellido`` | Nombre completo del usuario                             |
 |``dni``             | Documento único                                         |
 |``reputacion``      | Puntaje de reputación, ajustado por agentes municipales.|
-|``email``           | Correo electrónico, indice unico.                                      |
+|``email``           | Correo electrónico, indice unico.                       |
 |``contrasena``      | Contraseña cifrada(hash)                                |
+|``municipio_id``    | Referencia obligatoria al municipio donde el usuario está registrado|  
 
+Regla: cada usuario pertenece a un único municipio.
+  
 ---
 
 
@@ -293,8 +298,8 @@ Se registra en el arreglo acciones dentro de la colección AgenteMunicipal, que 
 ```Json
 {
   "_id": ObjectId,
-  "usuario_id": ObjectId,
-  "municipio_id": ObjectId,
+  "usuario_id": ObjectId("ID_USUARIO_CHILECITO"),
+  "municipio_id": ObjectId("ID_CHILECITO"),
   "patente_vehiculo": "ABC123",
   "fechaHora_dispositivo": ISODate("2026-06-02T15:00:00Z"),
   "fechaHora_server": ISODate(),
@@ -302,9 +307,14 @@ Se registra en el arreglo acciones dentro de la colección AgenteMunicipal, que 
   "estado": "Pendiente",
   "hash_evidencia": "sha256...",
   "descripcion": "Vehículo bloqueando rampa",
-  "validador_id": ObjectId
+  "validador_id": ObjectId("ID_AGENTE")
 }
+
 ```
+
+
+
+
 ### Descripción
 
 | Campo | Descripción |
@@ -319,7 +329,9 @@ Se registra en el arreglo acciones dentro de la colección AgenteMunicipal, que 
 | ``estado`` | Estado del reporte: Pendiente, Validada, Rechazada. |
 | ``hash_evidencia`` | Hash SHA-256 de la evidencia asociada. |
 | ``descripcion`` | Información adicional del reporte. |
-| ``validador_id`` | Referencia al agente municipal que validó. |
+| ``validador_id`` | Referencia al agente municipal que validó. |  
+
+Regla de negocio: usuario.municipio_id debe coincidir con reporte.municipio_id. 
 
 ---
 
