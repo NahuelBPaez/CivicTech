@@ -125,8 +125,9 @@ En la base de datos únicamente se almacena:
 
 ## Requisitos previos
 
-- [Docker](https://www.docker.com/get-started) y Docker Compose instalados
-- [Git](https://git-scm.com/) instalado
+* **Docker Desktop** instalado y en ejecución.
+* **Git** instalado (para clonar el repo).
+* **MongoDB Compass** o **mongosh** disponibles para ejecutar el script.
 
 ---
 
@@ -138,6 +139,82 @@ En la base de datos únicamente se almacena:
 git clone https://github.com/NahuelBPaez/CivicTech.git
 cd CivicTech
 ```
+---- 
+
+### 2. Levantar MongoDB usando Docker Desktop (pasos sencillos)
+1. Abrí Docker Desktop y confirmá que está corriendo.
+
+2. Crear el contenedor MongoDB (dos opciones):
+
+**Opción A — Interfaz gráfica (Docker Desktop):**
+
+* En Docker Desktop → Images → buscá la imagen mongo:6 (o la versión que prefieras) y hacé Run.
+
+* En la ventana de ejecución:
+
+  * **Container name:** mongo_civictech
+
+  * **Ports:** mapear 27017 → 27017 (Host:Container)
+
+  * **Volumes:** opcionalmente mapear un volumen local para persistencia (ej. ./data/db:/data/db)
+
+  * **Environment (opcional):** MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD si querés autenticación.
+
+* Iniciá el contenedor.
+
+**Opción B — Línea de comandos (rápido):**
+```Bash
+# sin autenticación (útil para desarrollo local)
+docker run -d --name mongo_civictech -p 27017:27017 -v $(pwd)/data/db:/data/db mongo:6
+
+# con usuario root (si querés autenticación)
+docker run -d --name mongo_civictech -p 27017:27017 -v $(pwd)/data/db:/data/db -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:6
+```  
+3. Verificá en Docker Desktop que el contenedor esté Running y sin errores en los logs.
+
+---
+### 3. Conectar MongoDB Compass  
+
+1. Abrí MongoDB Compass.
+
+2. Cadena de conexión:
+
+* Si no configuraste autenticación:
+```Bash
+mongodb://localhost:27017
+```
+* Si configuraste usuario root:
+```Bash
+mongodb://admin:adminpass@localhost:27017/?authSource=admin
+```
+3. Conectate y seleccioná la base civictech (si no existe, el script la creará al insertar).
+
+---
+### 4. Ejecutar el script (Playground de Compass) — método recomendado
+
+1. En el repo tenés script_mongo_autocontenido.js (o scrip_mongo.js). Abrilo y copiá todo su contenido.
+
+2. En Compass → seleccioná la base civictech → **Playground** → pegá el script completo.
+
+3. Ejecutá **Run.**
+
+  * El script es autocontenido: intenta dropear colecciones existentes (si tu usuario tiene permiso readWrite), crea colecciones, índices y datos de prueba, y define una función local para validar ``usuario.municipio_id`` === ``reporte.municipio_id.``
+
+  * Si hay timeout o error por tamaño, ejecutá el script por bloques en este orden: **colecciones → municipios → usuarios → función local → reportes → evidencias/agentes.**  
+
+### Alternativa (mongosh):  
+```Bash
+# si usás autenticación
+mongosh --username admin --password 'adminpass' --authenticationDatabase admin --file script_mongo_autocontenido.js
+
+# si no usás autenticación
+mongosh --file script_mongo_autocontenido.js
+
+```
+
+---
+
+
 
 ### 2. Configurar las variables de entorno
 
@@ -145,7 +222,6 @@ Copiá el archivo de ejemplo y completá tus credenciales:
 
 ```bash
 cp prueba.env .env
-```
 
 Editá `.env` con tus valores:
 
@@ -158,17 +234,6 @@ DB_PASSWORD=tu_contraseña_secreta
 ```
 
 
-### 3. Levantar los contenedores
-
-```bash
-docker-compose up --build
-```
-
-Esto levanta dos servicios:
-- **`db`** — PostgreSQL 16 con PostGIS. Ejecuta `dbscripts.sql` automáticamente y carga los datos de prueba.
-- **`jupyter`** — JupyterLab disponible en [http://localhost:8888](http://localhost:8888)
-
-> La primera vez puede tardar unos minutos mientras se descarga la imagen de PostGIS.
 
 ### 4. Acceder a JupyterLab
 
