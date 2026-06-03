@@ -141,7 +141,35 @@ cd CivicTech
 ```
 ---- 
 
-### 2. Levantar MongoDB usando Docker Desktop (pasos sencillos)
+## 2. Configurar las variables de entorno
+
+Copiá el archivo de ejemplo y completá tus credenciales:
+
+```bash
+cp prueba.env .env
+```
+
+Editá .env con tus valores.
+
+```Bash
+# Conexión a MongoDB (contenedor en Docker Desktop)
+MONGO_HOST=localhost
+MONGO_PORT=27017
+MONGO_DB_NAME=civictech
+MONGO_USER=admin
+MONGO_PASSWORD=adminpass
+```
+```bash
+# Puerto de Jupyter (si corres Jupyter en contenedor)
+JUPYTER_PORT=8888
+```
+
+### Para qué sirven estas variables  
+Estas variables son leídas por los notebooks y la capa DAO (Python) para construir la URI de conexión a MongoDB y evitar hardcodear credenciales en el código.
+
+---
+
+### 3. Levantar MongoDB usando Docker Desktop (pasos sencillos)
 1. Abrí Docker Desktop y confirmá que está corriendo.
 
 2. Crear el contenedor MongoDB (dos opciones):
@@ -173,7 +201,8 @@ docker run -d --name mongo_civictech -p 27017:27017 -v $(pwd)/data/db:/data/db -
 3. Verificá en Docker Desktop que el contenedor esté Running y sin errores en los logs.
 
 ---
-### 3. Conectar MongoDB Compass  
+
+### 4. Conectar MongoDB Compass  
 
 1. Abrí MongoDB Compass.
 
@@ -190,7 +219,8 @@ mongodb://admin:adminpass@localhost:27017/?authSource=admin
 3. Conectate y seleccioná la base civictech (si no existe, el script la creará al insertar).
 
 ---
-### 4. Ejecutar el script (Playground de Compass) — método recomendado
+
+### 5. Ejecutar el script (Playground de Compass) — método recomendado
 
 1. En el repo tenés ``script_mongo.js``. Abrilo y copiá todo su contenido.
 
@@ -211,27 +241,13 @@ mongosh --username admin --password 'adminpass' --authenticationDatabase admin -
 mongosh --file script_mongo.js
 
 ```
+---
+### Verificacion rapida:  
+
+El archivo ``Checklist_script_mongo.js``contiene un conjunto de comandos básicos para verificar el script. 
 
 ---
 
-
-
-### 2. Configurar las variables de entorno
-
-Copiá el archivo de ejemplo y completá tus credenciales:
-
-```bash
-cp prueba.env .env
-
-Editá `.env` con tus valores:
-
-```env
-DB_HOST=db
-DB_PORT=5432
-DB_NAME=civictech_db
-DB_USER=postgres
-DB_PASSWORD=tu_contraseña_secreta
-```
 
 
 
