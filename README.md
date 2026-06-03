@@ -199,7 +199,7 @@ dnspython>=2.0
 
 2. Crear el contenedor MongoDB (dos opciones):
 
-**Opción A — Interfaz gráfica (Docker Desktop):**
+### Opción A — Interfaz gráfica (Docker Desktop):
 
 * En Docker Desktop → Images → buscá la imagen mongo:6 (o la versión que prefieras) y hacé Run.
 
@@ -215,19 +215,43 @@ dnspython>=2.0
 
 * Iniciá el contenedor.
 
-**Opción B — Línea de comandos (rápido):**
 
-**Sin autenticación (útil para desarrollo local)**
+  
+### Opción B — Línea de comandos (rápido):
+**Sin autenticación (útil para desarrollo local)**  
+  
+Opción 1 — Mongo 6 (si tu CPU soporta AVX):
+
 ```Bash
 docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" mongo:6
 
 ```
+  
+Opción 2 — Mongo 4.4 (para CPUs sin AVX, más compatible):
 
-**Con usuario root (si querés autenticación)**
+```Bash
+docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" mongo:4.4
+
+```
+
+  
+**Con usuario root (si querés autenticación)**  
+Opción 1 — Mongo 6 (si tu CPU soporta AVX):  
+
 ```Bash
 docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:6
 
-```  
+```
+Opción 2 — Mongo 4.4 (para CPUs sin AVX, más compatible):  
+
+```Bash
+docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:4.4
+
+```
+
+
+
+  
 3. Verificá en Docker Desktop que el contenedor esté Running y sin errores en los logs.
 
 ---
