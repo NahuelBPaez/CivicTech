@@ -218,31 +218,18 @@ dnspython>=2.0
 
   
 ### Opción B — Línea de comandos (rápido):
-**Sin autenticación (útil para desarrollo local)**  
-  
-Opción 1 — Mongo 6 (si tu CPU soporta AVX):
+ 
+<br>
 
-```Bash
-docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" mongo:6
-
-```
-  
-Opción 2 — Mongo 4.4 (para CPUs sin AVX, más compatible):
-
-```Bash
-docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" mongo:4.4
-
-```
-
-  
-**Con usuario root (si querés autenticación)**  
-Opción 1 — Mongo 6 (si tu CPU soporta AVX):  
+**Opción 1 — Mongo 6 (si tu CPU soporta AVX):**  
 
 ```Bash
 docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:6
 
 ```
-Opción 2 — Mongo 4.4 (para CPUs sin AVX, más compatible):  
+<br> 
+
+**Opción 2 — Mongo 4.4 (para CPUs sin AVX, más compatible):**
 
 ```Bash
 docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:4.4
@@ -260,12 +247,11 @@ docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -
 
 1. Abrí MongoDB Compass.
 
-2. Cadena de conexión:
+2. Usá la cadena de conexión con autenticación:
 
 ```Bash
 mongodb://admin:adminpass@localhost:27017/?authSource=admin
 ```
-3. Conectate y seleccioná la base civictech (si no existe, el script la creará al insertar).
 
 ---
 
@@ -294,6 +280,7 @@ mongosh --username admin --password 'adminpass' --authenticationDatabase admin c
 ```Bash
 mongosh --username admin --password 'adminpass' --authenticationDatabase admin civictech --file Checklist_script_mongo.js
 ```
+<br>
 
 Detalles del script:  
 * El script es autocontenido: intenta dropear colecciones existentes (si tu usuario tiene permiso readWrite), crea colecciones, índices y datos de prueba, y define una función local para validar que usuario.municipio_id === reporte.municipio_id.  
