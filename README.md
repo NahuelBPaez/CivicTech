@@ -262,11 +262,6 @@ docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -
 
 2. Cadena de conexión:
 
-* Si no configuraste autenticación:
-```Bash
-mongodb://localhost:27017
-```
-* Si configuraste usuario root:
 ```Bash
 mongodb://admin:adminpass@localhost:27017/?authSource=admin
 ```
@@ -286,14 +281,9 @@ mongodb://admin:adminpass@localhost:27017/?authSource=admin
 
   * Si hay timeout o error por tamaño, ejecutá el script por bloques en este orden: **colecciones → municipios → usuarios → función local → reportes → evidencias/agentes.**  
 
-### Alternativa (mongosh):  
+### Alternativa por consola(mongosh):  
 ```Bash
-# si usás autenticación
-mongosh --username admin --password 'adminpass' --authenticationDatabase admin --file script_mongo.js
-
-# si no usás autenticación
-mongosh --file script_mongo.js
-
+mongosh --username admin --password 'adminpass' --authenticationDatabase admin civictech --file script_mongo.js
 ```
 ---
 ### Verificacion rapida:  
