@@ -147,6 +147,7 @@ Copiá el archivo de ejemplo y completá tus credenciales:
 
 ```bash
 cp prueba.env .env
+nano .env
 ```
 
 Editá .env con tus valores.
@@ -166,21 +167,20 @@ JUPYTER_PORT=8888
 Crear y activar entorno virtual
 ```bash
 # macOS / Linux
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
+#### Windows PowerShell
 ```bash
-# Windows PowerShell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
-### Instalar dependencias
+#### Instalar dependencias
 ```bash
 pip install --upgrade pip
+pip uninstall -y bson || true
 pip install -r requirements.txt
-# o si no hay requirements.txt
-pip install pymongo python-dotenv jupyterlab pandas dnspython
 ```
 
 requirements.txt sugerido
@@ -218,31 +218,18 @@ dnspython>=2.0
 
   
 ### Opción B — Línea de comandos (rápido):
-**Sin autenticación (útil para desarrollo local)**  
-  
-Opción 1 — Mongo 6 (si tu CPU soporta AVX):
+ 
+<br>
 
-```Bash
-docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" mongo:6
-
-```
-  
-Opción 2 — Mongo 4.4 (para CPUs sin AVX, más compatible):
-
-```Bash
-docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" mongo:4.4
-
-```
-
-  
-**Con usuario root (si querés autenticación)**  
-Opción 1 — Mongo 6 (si tu CPU soporta AVX):  
+**Opción 1 — Mongo 6 (si tu CPU soporta AVX):**  
 
 ```Bash
 docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:6
 
 ```
-Opción 2 — Mongo 4.4 (para CPUs sin AVX, más compatible):  
+<br> 
+
+**Opción 2 — Mongo 4.4 (para CPUs sin AVX, más compatible):**
 
 ```Bash
 docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=adminpass mongo:4.4
@@ -260,45 +247,45 @@ docker run -d --name mongo_civictech -p 27017:27017 -v "$PWD/data/db:/data/db" -
 
 1. Abrí MongoDB Compass.
 
-2. Cadena de conexión:
+2. Usá la cadena de conexión con autenticación:
 
-* Si no configuraste autenticación:
-```Bash
-mongodb://localhost:27017
-```
-* Si configuraste usuario root:
 ```Bash
 mongodb://admin:adminpass@localhost:27017/?authSource=admin
 ```
-3. Conectate y seleccioná la base civictech (si no existe, el script la creará al insertar).
 
 ---
 
-### 5. Ejecutar el script (Playground de Compass) — método recomendado
+### 5. Ejecutar el script en (MongoDB Compass)
+En el repo tenés script_mongo.js. Abrilo y copiá todo su contenido.
 
-1. En el repo tenés ``script_mongo.js``. Abrilo y copiá todo su contenido.
+En Compass:  
+1. Si es la primera vez, creá una nueva base de datos llamada "civictech".  
+2. Compass te pedirá también una colección inicial: usá "municipio" (coincide con el script).  
+3. Una vez creada, seleccioná la base "civictech" en el panel izquierdo.  
+4. Abrí **Open MongoDB Shell** desde Compass (ícono superior derecho).  
+5. Pegá el contenido completo de script_mongo.js en la consola del Shell.  
+6. Ejecutá los comandos para crear colecciones, índices y datos de prueba.  
 
-2. En Compass → seleccioná la base civictech → **Playground** → pegá el script completo.
-
-3. Ejecutá **Run.**
-
-  * El script es autocontenido: intenta dropear colecciones existentes (si tu usuario tiene permiso readWrite), crea colecciones, índices y datos de prueba, y define una función local para validar ``usuario.municipio_id`` === ``reporte.municipio_id.``
-
-  * Si hay timeout o error por tamaño, ejecutá el script por bloques en este orden: **colecciones → municipios → usuarios → función local → reportes → evidencias/agentes.**  
-
-### Alternativa (mongosh):  
+### Alternativa por consola(mongosh):  
 ```Bash
-# si usás autenticación
-mongosh --username admin --password 'adminpass' --authenticationDatabase admin --file script_mongo.js
-
-# si no usás autenticación
-mongosh --file script_mongo.js
-
+mongosh --username admin --password 'adminpass' --authenticationDatabase admin civictech --file script_mongo.js
 ```
----
-### Verificacion rapida:  
+### Verificación rápida
+##### En Compass:  
+1. Abrí Open MongoDB Shell desde Compass (ícono superior derecho).
+2. Copiá y pegá el contenido de Checklist_script_mongo.js en la consola del Shell.
+3. Ejecutá los comandos para confirmar que las colecciones, índices y datos se crearon correctamente.  
 
-El archivo ``Checklist_script_mongo.js``contiene un conjunto de comandos básicos para verificar el script. 
+#### En mongosh (consola): 
+```Bash
+mongosh --username admin --password 'adminpass' --authenticationDatabase admin civictech --file Checklist_script_mongo.js
+```
+<br>
+
+Detalles del script:  
+* El script es autocontenido: intenta dropear colecciones existentes (si tu usuario tiene permiso readWrite), crea colecciones, índices y datos de prueba, y define una función local para validar que usuario.municipio_id === reporte.municipio_id.  
+* Si hay timeout o error por tamaño, ejecutá el script por bloques en este orden: colecciones → municipios → usuarios → función local → reportes → evidencias/agentes.
+
 
 ---
 
