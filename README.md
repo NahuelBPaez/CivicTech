@@ -269,26 +269,36 @@ mongodb://admin:adminpass@localhost:27017/?authSource=admin
 
 ---
 
-### 5. Ejecutar el script (Playground de Compass) — método recomendado
+### 5. Ejecutar el script en (MongoDB Compass)
+En el repo tenés script_mongo.js. Abrilo y copiá todo su contenido.
 
-1. En el repo tenés ``script_mongo.js``. Abrilo y copiá todo su contenido.
-
-2. En Compass → seleccioná la base civictech → **Playground** → pegá el script completo.
-
-3. Ejecutá **Run.**
-
-  * El script es autocontenido: intenta dropear colecciones existentes (si tu usuario tiene permiso readWrite), crea colecciones, índices y datos de prueba, y define una función local para validar ``usuario.municipio_id`` === ``reporte.municipio_id.``
-
-  * Si hay timeout o error por tamaño, ejecutá el script por bloques en este orden: **colecciones → municipios → usuarios → función local → reportes → evidencias/agentes.**  
+En Compass:  
+1. Si es la primera vez, creá una nueva base de datos llamada "civictech".  
+2. Compass te pedirá también una colección inicial: usá "municipio" (coincide con el script).  
+3. Una vez creada, seleccioná la base "civictech" en el panel izquierdo.  
+4. Abrí **Open MongoDB Shell** desde Compass (ícono superior derecho).  
+5. Pegá el contenido completo de script_mongo.js en la consola del Shell.  
+6. Ejecutá los comandos para crear colecciones, índices y datos de prueba.  
 
 ### Alternativa por consola(mongosh):  
 ```Bash
 mongosh --username admin --password 'adminpass' --authenticationDatabase admin civictech --file script_mongo.js
 ```
----
-### Verificacion rapida:  
+### Verificación rápida
+##### En Compass:  
+1. Abrí Open MongoDB Shell desde Compass (ícono superior derecho).
+2. Copiá y pegá el contenido de Checklist_script_mongo.js en la consola del Shell.
+3. Ejecutá los comandos para confirmar que las colecciones, índices y datos se crearon correctamente.  
 
-El archivo ``Checklist_script_mongo.js``contiene un conjunto de comandos básicos para verificar el script. 
+#### En mongosh (consola): 
+```Bash
+mongosh --username admin --password 'adminpass' --authenticationDatabase admin civictech --file Checklist_script_mongo.js
+```
+
+Detalles del script:  
+* El script es autocontenido: intenta dropear colecciones existentes (si tu usuario tiene permiso readWrite), crea colecciones, índices y datos de prueba, y define una función local para validar que usuario.municipio_id === reporte.municipio_id.  
+* Si hay timeout o error por tamaño, ejecutá el script por bloques en este orden: colecciones → municipios → usuarios → función local → reportes → evidencias/agentes.
+
 
 ---
 
