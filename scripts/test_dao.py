@@ -1,4 +1,11 @@
 # scripts/test_dao.py
+
+import sys, os
+# Agrega la raíz del proyecto al sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from dao.mongo_dao import MongoDAO
+
 """
 Prueba mínima de la capa DAO para:
 - conectar a MongoDB
