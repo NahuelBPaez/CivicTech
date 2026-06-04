@@ -170,18 +170,17 @@ Crear y activar entorno virtual
 python3 -m venv .venv
 source .venv/bin/activate
 ```
+#### Windows PowerShell
 ```bash
-# Windows PowerShell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
-### Instalar dependencias
+#### Instalar dependencias
 ```bash
 pip install --upgrade pip
+pip uninstall -y bson || true
 pip install -r requirements.txt
-# o si no hay requirements.txt
-pip install pymongo python-dotenv jupyterlab pandas dnspython
 ```
 
 requirements.txt sugerido
