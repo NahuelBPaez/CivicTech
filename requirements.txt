@@ -1,6 +1,8 @@
 pymongo>=4.0
 python-dotenv>=1.0
+notebook>=7.0
 jupyterlab>=4.0
 pandas>=2.0
 dnspython>=2.0
-bson>=0.5.10
+ipykernel>=7.0
+

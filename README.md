@@ -165,8 +165,8 @@ JUPYTER_PORT=8888
 
 ### Entorno y dependencias  
 Crear y activar entorno virtual
-```bash
 # macOS / Linux
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
@@ -179,17 +179,19 @@ python -m venv .venv
 #### Instalar dependencias
 ```bash
 pip install --upgrade pip
-pip uninstall -y bson || true
-pip install -r requirements.txt
+pip install --no-cache-dir -r requirements.txt
+python -m ipykernel install --user --name=civictech-venv --display-name "CivicTech (.venv)"
 ```
 
 requirements.txt sugerido
 ```bash
 pymongo>=4.0
 python-dotenv>=1.0
+notebook>=7.0
 jupyterlab>=4.0
 pandas>=2.0
 dnspython>=2.0
+ipykernel>=7.0
 ```
 
 ---
