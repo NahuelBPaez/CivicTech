@@ -147,6 +147,7 @@ Copiá el archivo de ejemplo y completá tus credenciales:
 
 ```bash
 cp prueba.env .env
+nano .env
 ```
 
 Editá .env con tus valores.
@@ -166,7 +167,7 @@ JUPYTER_PORT=8888
 Crear y activar entorno virtual
 ```bash
 # macOS / Linux
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 ```bash
