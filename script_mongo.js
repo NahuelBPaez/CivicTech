@@ -4,8 +4,6 @@
 // - Ejecutar todo de una sola vez en Playground o mongosh
 // =====================================================================
 
-
-
 (function cleanup() {
   try {
     const cols = db.getCollectionNames();
