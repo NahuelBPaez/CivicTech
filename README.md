@@ -693,6 +693,21 @@ El proyecto demuestra la aplicación práctica de conceptos fundamentales de Bas
 * Arquitectura DAO.
 
 ---
+## Notas Técnicas y Consideraciones
+
+- **Uso de BSON en Python**  
+  MongoDB ya incluye su propia implementación de `bson` dentro de `pymongo`.  
+  ✔️ Evitá instalar el paquete externo `bson` para prevenir conflictos.  
+  ✔️ Si aparece un error de importación, eliminá el paquete externo y asegurate de usar solo el que viene con `pymongo`.
+
+- **Fechas y zona horaria en Python 3.12+**  
+  La función `datetime.utcnow()` está deprecada.  
+  ✔️ Usar en su lugar:
+  ```python
+  from datetime import datetime, timezone
+  datetime.now(timezone.utc)
+
+----
 
 # Autores
 
