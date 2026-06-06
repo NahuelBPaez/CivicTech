@@ -645,25 +645,6 @@ db.reporte.createIndex({ patente_vehiculo: 1 })
 
 ---
 
-# Capa DAO (Data Access Object)
-
-El proyecto implementa una capa DAO en Python utilizando `psycopg2`.
-
-## Clases principales
-
-* `ConexionDB`
-* `UsuarioDAO`
-* `ReporteDAO`
-* `EvidenciaDAO`
-
-Esta arquitectura permite:
-
-* Separar lógica de negocio y acceso a datos.
-* Facilitar mantenimiento.
-* Centralizar operaciones CRUD.
-
----
-
 # Tecnologías Utilizadas
 
 | Tecnología   | Uso                        |
@@ -718,7 +699,8 @@ El proyecto demuestra la aplicación práctica de conceptos fundamentales de Bas
 Trabajo Integrador – Base de Datos II
 Universidad Nacional de Chilecito (UNdeC)
 
-* Nombre y Apellido
-* Nombre y Apellido
+* Avila Dionel 
+* Barrera Páez Nahuel
+* Romero Agustin
 
 Año: 2026
