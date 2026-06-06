@@ -302,12 +302,6 @@ En la consola con el entorno activo ejecuta el siguiente comando:
 jupyter notebook
 ```
 
-Abrí el navegador en:
-
-```
-http://localhost:8888
-```
-
 Los notebooks disponibles son:
 - `prueba_dao.ipynb` — pruebas CRUD con la capa DAO en Python
 - `consultas_sql.ipynb` — consultas SQL directas con jupysql
