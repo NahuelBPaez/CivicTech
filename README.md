@@ -296,6 +296,12 @@ Detalles del script:
 
 ### 4. Acceder a JupyterLab
 
+En la consola con el entorno activo ejecuta el siguiente comando:
+
+```bash
+jupyter notebook
+```
+
 Abrí el navegador en:
 
 ```
@@ -325,20 +331,29 @@ docker-compose up --build
 
 ```
 CivicTech/
-├── db_models/
-│   ├── __init__.py
-│   ├── usuario.py
-│   ├── reporte.py
-│   └── evidencia.py
-├── dao.py
+├──dao/
+│   ├── agente_municipal_dao.py
+│   ├── mongo_dao.py
+│   ├── municipio_dao.py
+│   ├── reporte_dao.py
+│   ├── usuario_dao.py
+│   └── __init__.py
+├──scripts/
+│   ├── check_connection_mongo.py
+│   └── test_dao.py
+├── Checklist_script_mongo.js
+├── config.py
 ├── config_vars.py
-├── dbscripts.sql
-├── docker-compose.yml
 ├── Dockerfile
-├── libs.txt
+├── prueba_agente_municipal_dao.ipynb
 ├── prueba_dao.ipynb
-├── consultas_sql.ipynb
-├── prueba.env
+├── prueba_dao_mongo.ipynb
+├── prueba_municipio_dao.ipynb
+├── prueba_reporte_dao.ipynb
+├── prueba_usuario_dao.ipynb
+├── README.md
+├── requirements.txt
+├── script_mongo.js
 └── .gitignore
 ```
 
@@ -653,10 +668,10 @@ Esta arquitectura permite:
 
 | Tecnología   | Uso                        |
 | ------------ | -------------------------- |
-| PostgreSQL   | Base de datos relacional   |
-| PostGIS      | Procesamiento geoespacial  |
+| MongoDB      | Base de datos documental   |
+| GeoJSON      | Georeferencias             |
 | Python       | Lógica backend             |
-| psycopg2     | Conexión PostgreSQL        |
+| Jupyter      | Entorno de desarrollo      |
 | AWS S3 / GCP | Almacenamiento de archivos |
 
 ---
