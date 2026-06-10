@@ -68,6 +68,18 @@ class AgenteMunicipalDAO:
     def _now_utc(self) -> datetime:
         return datetime.now(timezone.utc)
 
+    def _municipio_match_filter(self) -> Dict[str, Any]:
+        """
+        Devuelve un filtro que coincide con el municipio del agente tanto si
+        los documentos tienen municipio_id como ObjectId como si lo tienen como string.
+        """
+        return {
+            "$or": [
+                {"municipio_id": self.agente_municipio_id},
+                {"municipio_id": str(self.agente_municipio_id)}
+            ]
+        }
+
     # -----------------------
     # Lecturas (respetando permiso)
     # -----------------------
@@ -75,9 +87,11 @@ class AgenteMunicipalDAO:
         """
         Lista reportes que pertenecen al municipio del agente.
         Devuelve documentos con 'municipio_nombre' embebido.
+        Acepta que en la colección 'reporte' el campo municipio_id sea ObjectId o string.
         """
+        match_filter = self._municipio_match_filter()
         pipeline = [
-            {"$match": {"municipio_id": self.agente_municipio_id}},
+            {"$match": match_filter},
             {"$sort": {"fechaHora_server": -1}},
             {"$limit": limit},
             {"$lookup": {
@@ -108,11 +122,21 @@ class AgenteMunicipalDAO:
         rpt = self.db.reporte.find_one({"_id": reporte_id})
         if not rpt:
             return None
-        if rpt.get("municipio_id") != self.agente_municipio_id:
+
+        # comparar aceptando string u ObjectId en el documento
+        rpt_mid = rpt.get("municipio_id")
+        if rpt_mid != self.agente_municipio_id and str(rpt_mid) != str(self.agente_municipio_id):
             return None
+
         evidencias = list(self.db.evidencia.find({"reporte_id": reporte_id}))
         rpt["evidencias"] = evidencias
         mun = self.db.municipio.find_one({"_id": rpt.get("municipio_id")}, {"nombre": 1})
+        # si lookup por ObjectId falló (porque municipio_id es string), intentar buscar por string->ObjectId
+        if not mun:
+            try:
+                mun = self.db.municipio.find_one({"_id": ObjectId(str(rpt.get("municipio_id")))}, {"nombre": 1})
+            except Exception:
+                mun = None
         rpt["municipio_nombre"] = mun.get("nombre") if mun else None
         return rpt
 
@@ -122,8 +146,8 @@ class AgenteMunicipalDAO:
     def _validate_reporte_minimo(self, r: Dict[str, Any]) -> Optional[str]:
         if not isinstance(r.get("usuario_id"), ObjectId):
             return "usuario_id debe ser ObjectId"
-        if not isinstance(r.get("municipio_id"), ObjectId):
-            return "municipio_id debe ser ObjectId"
+        if not isinstance(r.get("municipio_id"), (ObjectId, str)):
+            return "municipio_id debe ser ObjectId o string con ObjectId"
         if "ubicacion" not in r or not isinstance(r["ubicacion"], dict):
             return "ubicacion debe ser GeoJSON Point"
         if r.get("estado") not in self.VALID_ESTADOS:
@@ -159,7 +183,13 @@ class AgenteMunicipalDAO:
             return None, None, f"Validación evidencia: {err_ev}"
 
         # Regla de negocio: el agente solo puede crear reportes en su municipio
-        if reporte_doc.get("municipio_id") != self.agente_municipio_id:
+        rpt_mid = reporte_doc.get("municipio_id")
+        # aceptar si rpt_mid es ObjectId o string que coincide con agente_municipio_id
+        if isinstance(rpt_mid, ObjectId):
+            ok = (rpt_mid == self.agente_municipio_id)
+        else:
+            ok = (str(rpt_mid) == str(self.agente_municipio_id))
+        if not ok:
             return None, None, "Permiso denegado: el agente solo puede crear reportes en su municipio"
 
         client = getattr(self.mongo, "client", None)
@@ -210,7 +240,9 @@ class AgenteMunicipalDAO:
         rpt = self.db.reporte.find_one({"_id": reporte_id})
         if not rpt:
             return False, "Reporte no encontrado"
-        if rpt.get("municipio_id") != self.agente_municipio_id:
+
+        rpt_mid = rpt.get("municipio_id")
+        if rpt_mid != self.agente_municipio_id and str(rpt_mid) != str(self.agente_municipio_id):
             return False, "Permiso denegado: reporte de otro municipio"
 
         try:
@@ -259,12 +291,4 @@ if __name__ == "__main__":
     agente_municipio_id = ObjectId("6a21d09b4076ce51229df8a4")  # reemplazar
     dao = AgenteMunicipalDAO(mongo, agente_municipio_id=agente_municipio_id)
     dao.ensure_indexes()
-
-    # Listar
-    rows = dao.list_reports_by_municipio(limit=10)
-    print("Reportes visibles:", len(rows))
-
-    # Intento de update_estado (reemplazar reporte_id real)
-    # ok, err = dao.update_estado(ObjectId("..."), "Validada")
-    # print("ok:", ok, "err:", err)
 

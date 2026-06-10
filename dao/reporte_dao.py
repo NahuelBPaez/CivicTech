@@ -1,12 +1,11 @@
 # dao/reporte_dao.py
-from datetime import datetime
+from datetime import datetime, timedelta
 from bson import ObjectId
 from pymongo import ASCENDING, DESCENDING, ReturnDocument
 
 class ReportesDAO:
     """
-    DAO para la colección 'reporte' y la colección 'evidencia',
-    adaptado a las convenciones del script de base de datos del proyecto.
+    DAO para la colección 'reporte' y la colección 'evidencia'.
     Acepta una instancia de MongoDAO (con .db y .client) o una pymongo Database.
     """
     def __init__(self, mongo_or_db):
@@ -53,14 +52,17 @@ class ReportesDAO:
     # -------------------------
     # Creación y evidencias
     # -------------------------
-    def create_reporte(self, reporte_doc):
+    def create_reporte(self, reporte_doc, evidencia_doc=None):
         """
-        Inserta un reporte simple. Preferible usar insertar_reporte_con_evidencia
-        para respetar la regla de negocio de al menos 1 evidencia.
+        Inserta un reporte simple. Ahora exige evidencia asociada.
+        - Si no se provee evidencia_doc, se lanza ValueError indicando usar insert_report_with_evidence.
+        - Si se provee evidencia_doc, se delega a insertar_reporte_con_evidencia para mantener atomicidad.
         """
-        reporte_doc.setdefault("fechaHora_server", self._now())
-        res = self.reporte_col.insert_one(reporte_doc)
-        return res.inserted_id
+        if evidencia_doc is None:
+            raise ValueError("No se permite insertar un reporte sin evidencia. Usá insert_report_with_evidence(reporte_doc, evidencia_doc).")
+
+        # Si se pasó evidencia, delegar a la inserción atómica
+        return self.insertar_reporte_con_evidencia(reporte_doc, evidencia_doc)
 
     def add_evidencia(self, evidencia_doc):
         """
@@ -80,7 +82,7 @@ class ReportesDAO:
     def insertar_reporte_con_evidencia(self, reporte_doc, evidencia_doc):
         """
         Inserta un reporte y al menos una evidencia asociada.
-        Reglas aplicadas (copiadas del script):
+        Reglas aplicadas:
           - usuario_id y municipio_id deben existir y coincidir
           - evidencia_doc debe incluir url_foto y hash_seguridad_sha
         Usa transacción si self.client está disponible; si no, hace fallback.
@@ -134,6 +136,42 @@ class ReportesDAO:
                 session.end_session()
 
     # -------------------------
+    # Wrapper amigable para notebooks/scripts
+    # -------------------------
+    def insert_report_with_evidence(self, reporte_doc: dict, evidencia_doc: dict):
+        """
+        Wrapper amigable para notebooks:
+        - Normaliza ids (acepta str u ObjectId).
+        - Valida campos mínimos.
+        - Reusa insertar_reporte_con_evidencia y devuelve (reporte_id, evidencia_id, error_msg).
+        """
+        # Normalizar ids
+        try:
+            if "usuario_id" in reporte_doc and not isinstance(reporte_doc["usuario_id"], ObjectId):
+                reporte_doc["usuario_id"] = ObjectId(reporte_doc["usuario_id"])
+            if "municipio_id" in reporte_doc and not isinstance(reporte_doc["municipio_id"], ObjectId):
+                reporte_doc["municipio_id"] = ObjectId(reporte_doc["municipio_id"])
+        except Exception as e:
+            return None, None, f"IDs inválidos: {type(e).__name__} {e}"
+
+        # Validaciones rápidas
+        if not reporte_doc.get("usuario_id") or not reporte_doc.get("municipio_id"):
+            return None, None, "Faltan usuario_id o municipio_id en el reporte"
+        if not evidencia_doc or not evidencia_doc.get("url_foto") or not evidencia_doc.get("hash_seguridad_sha"):
+            return None, None, "La evidencia debe incluir 'url_foto' y 'hash_seguridad_sha'"
+
+        # Delegar a la implementación que maneja transacciones/fallback
+        try:
+            reporte_id = self.insertar_reporte_con_evidencia(reporte_doc, evidencia_doc)
+            if not reporte_id:
+                return None, None, "No se insertó el reporte (sin error explícito)"
+            ev = self.evidencia_col.find_one({"reporte_id": reporte_id}, sort=[("uploaded_at", DESCENDING)])
+            evidencia_id = ev["_id"] if ev else None
+            return reporte_id, evidencia_id, None
+        except Exception as e:
+            return None, None, f"Error al insertar reporte+evidencia: {type(e).__name__} {e}"
+
+    # -------------------------
     # Búsquedas geoespaciales y utilidades
     # -------------------------
     def find_reportes_near(self, longitude, latitude, max_meters=100):
@@ -151,4 +189,40 @@ class ReportesDAO:
             {"$group": {"_id": "$estado", "count": {"$sum": 1}}}
         ]
         return list(self.reporte_col.aggregate(pipeline))
+
+    # -------------------------
+    # Listado agrupado por municipio (método añadido)
+    # -------------------------
+    def list_recent_grouped_by_municipio(self, limit=200):
+        """
+        Devuelve una lista de tuplas (municipio_nombre, [reportes]) ordenadas por nombre de municipio.
+        Cada reporte contiene los campos proyectados por el pipeline.
+        """
+        pipeline = [
+            {"$sort": {"fechaHora_server": -1}},
+            {"$limit": limit},
+            {"$lookup": {
+                "from": "municipio",
+                "localField": "municipio_id",
+                "foreignField": "_id",
+                "as": "mun"
+            }},
+            {"$unwind": {"path": "$mun", "preserveNullAndEmptyArrays": True}},
+            {"$project": {
+                "_id": 1,
+                "patente_vehiculo": 1,
+                "estado": 1,
+                "fechaHora_server": 1,
+                "usuario_id": 1,
+                "municipio_id": 1,
+                "municipio_nombre": "$mun.nombre",
+                "descripcion": 1
+            }}
+        ]
+        rows = list(self.reporte_col.aggregate(pipeline))
+        grouped = {}
+        for r in rows:
+            mun = r.get("municipio_nombre") or "SIN_NOMBRE"
+            grouped.setdefault(mun, []).append(r)
+        return [(mun, grouped[mun]) for mun in sorted(grouped.keys())]
 
